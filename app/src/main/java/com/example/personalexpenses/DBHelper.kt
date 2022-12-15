@@ -39,8 +39,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         values.put(COLUMN_COLOR, color)
         values.put(COLUMN_DATE, date)
 
-        // create a writable variable of
-        // database for inserting values
+        // create a writable variable of db for inserting values
         val db = writableDatabase
         // all values are inserted into database
         db.insert(TABLE_NAME, null, values)
@@ -52,7 +51,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         // create a readable variable of db to read value from it
         val db = readableDatabase
 
-        // return a cursor to read data from the database
+        // return a cursor to read data from the db
         return db.rawQuery("SELECT * FROM " + TABLE_NAME, null)
     } // end getExpense()
 
@@ -63,20 +62,14 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
     }
 
     companion object {
-        // here we have defined variables for our database
-
-        // below is variable for database name
-        private val DATABASE_NAME = "Expenses_DB"
-
-        // below is the variable for database version
-        private val DATABASE_VERSION = 1
-
-        // below is the variable for table name
-        val TABLE_NAME = "expenses_table"
-        val COLUMN_ID = "id"
-        val COLUMN_TITLE = "name"
-        val COLUMN_AMOUNT = "amount"
-        val COLUMN_COLOR = "color"
-        val COLUMN_DATE = "date"
+        // define variables for db
+        private const val DATABASE_NAME = "Expenses_DB"
+        private const val DATABASE_VERSION = 1
+        const val TABLE_NAME = "expenses_table"
+        const val COLUMN_ID = "id"
+        const val COLUMN_TITLE = "name"
+        const val COLUMN_AMOUNT = "amount"
+        const val COLUMN_COLOR = "color"
+        const val COLUMN_DATE = "date"
     }
 }

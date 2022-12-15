@@ -4,12 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.AutoCompleteTextView
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.personalexpenses.databinding.ActivityAddExpenseBinding
 import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -47,6 +44,7 @@ class AddExpenseActivity : AppCompatActivity() {
         titleText = findViewById(R.id.title_input)
         // Input from amount text field
         amountText = findViewById(R.id.amount_input)
+
         // Color selected from the Color Menu
         val selectedValue = findViewById<AutoCompleteTextView>(R.id.autoCompleteTextView)
 
@@ -69,14 +67,17 @@ class AddExpenseActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    // Save instance when UI changes (screen rotated)
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+
         title = titleText.editText?.text.toString()
         outState.putString(Companion.TITLE_KEY, title)
-        amount = amountText.editText?.text.toString().toDouble()
+        amount = amountText.editText?.text.toString().toDoubleOrNull()!!
         outState.putDouble(Companion.AMOUNT_KEY, amount)
     }
 
+    // Restore state when UI changes
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
 
@@ -84,9 +85,9 @@ class AddExpenseActivity : AppCompatActivity() {
         val titleTextInputLayout = findViewById<TextInputLayout>(R.id.title_input)
         titleTextInputLayout.editText?.setText(title)
 
-        amount = savedInstanceState.getDouble(AMOUNT_KEY)
+        val amountStr = savedInstanceState.getDouble(AMOUNT_KEY)
         val amountTextInputLayout = findViewById<TextInputLayout>(R.id.amount_input)
-        amountTextInputLayout.editText?.setText(amount.toString())
+        amountTextInputLayout.editText?.setText(amountStr.toString())
     }
 
     companion object {
