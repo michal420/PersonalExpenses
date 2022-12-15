@@ -1,31 +1,31 @@
 package com.example.personalexpenses
 
+import android.annotation.SuppressLint
 import android.content.Intent
-import android.graphics.Color
+import android.icu.util.Currency
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.personalexpenses.databinding.ActivityAddExpenseBinding
 import com.example.personalexpenses.databinding.ActivityMainBinding
+import java.text.DecimalFormat
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
+    private var layoutManager: RecyclerView.LayoutManager? = null
+    private var adapter: RecyclerView.Adapter<RecyclerAdapter.ViewHolder>? = null
+    private val currency = Currency.getInstance("EUR")
+    private val df = DecimalFormat("#.##")
 
-    // Room library (DB/sql lite) vs Shared Preferences (txt)
-
+    // sql lite
+    private val db = DBHelper(this, null)
     private lateinit var binding: ActivityMainBinding
-    private val key = "expenses"
-    private val expensesList = ArrayList<String>()
+    private val expensesList = mutableListOf<Expense>()
 
-    //    private val expensesList = ArrayList<String>()
-    private lateinit var adapter: CustomAdapter
-
+    @SuppressLint("Range")
     override fun onCreate(savedInstanceState: Bundle?) {
-
         // remove the default bar
         supportActionBar?.hide()
 
@@ -34,31 +34,19 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val expense = intent.getSerializableExtra(key) as Expenses?
-        val newColor: String = expense?.color.toString()
-
-        if (expense != null) {
-            expensesList.add(expense.title + " " + expense.amount + " " + expense.color + " " + expense.dateTime)
-        }
-//        Log.d("myTag", "!!!! EXP: ${expense?.title} / ${expense?.amount} / ${expense?.color}")
+        // Read from DB
+        val adapterList = readFromDB()
 
         // Recycler View
+        layoutManager = LinearLayoutManager(this)
         val recyclerView: RecyclerView = findViewById(R.id.recycler_view)
-        adapter = CustomAdapter(expensesList)
-
-//        recyclerView.setBackgroundColor(ContextCompat.getColor(this, R.color.newColor)
-//        recyclerView.setBackgroundColor(Color.parseColor(newColor))
-
-
-        val layoutManager = LinearLayoutManager(applicationContext)
         recyclerView.layoutManager = layoutManager
+
+        adapter = RecyclerAdapter(adapterList)
         recyclerView.adapter = adapter
-        adapter.notifyDataSetChanged()
 
-
-//        val card: CardView = findViewById(R.id.cardView)
-//        card.setCardBackgroundColor(ContextCompat.getColor(this, R.color.myColor))
-//        card.setCardBackgroundColor((Color.parseColor(color)))
+        // Calculate total spending
+        calculateTotalSpending(adapterList)
 
         // FAB
         val fab: View = findViewById(R.id.floating_action_button)
@@ -71,6 +59,42 @@ class MainActivity : AppCompatActivity() {
     private fun openActivity() {
         val intent = Intent(this, AddExpenseActivity::class.java)
         startActivity(intent)
+    }
+
+    @SuppressLint("Range")
+    private fun readFromDB(): List<Expense> {
+        val cursor = db.getExpense()
+        cursor!!.moveToFirst()
+
+        val t = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_TITLE)) + "\n"
+        val a = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_AMOUNT)) + "\n"
+        val c = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_COLOR)) + "\n"
+        val d = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_DATE)) + "\n"
+
+        val e = Expense(t, a.toDouble(), c, d)
+        expensesList.add(e)
+
+        // move cursor to next value and append it
+        while (cursor.moveToNext()) {
+
+            val t = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_TITLE)) + "\n"
+            val a = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_AMOUNT)) + "\n"
+            val c = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_COLOR)) + "\n"
+            val d = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_DATE)) + "\n"
+            val e = Expense(t, a.toDouble(), c, d)
+            expensesList.add(e)
+        }
+        return expensesList
+    } // end readFromDB
+
+    private fun calculateTotal(list: List<Expense>): Double {
+        return list.sumOf { it.amount }
+    }
+
+    private fun calculateTotalSpending(adapterList: List<Expense>) {
+        val totalTextView = findViewById<TextView>(R.id.total_text_view)
+        val total = calculateTotal(adapterList)
+        totalTextView.append(currency.symbol + df.format(total))
     }
 
 }

@@ -27,23 +27,40 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-<!--        <TextView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="This is my text" />-->
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
-            android:background="@color/design_default_color_primary"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent"
+            android:padding="@dimen/padding_16"
+            android:orientation="vertical">
 
-        </androidx.recyclerview.widget.RecyclerView>
+            <TextView
+                android:id="@+id/total_text_view"
+                android:text="@string/total_text"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="@dimen/padding_16"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/expenses_text_view"
+                android:text="@string/expenses_text"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+        </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
 
     <!--    FAB-->
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floating_action_button"
         android:layout_width="wrap_content"
@@ -53,6 +70,6 @@
         android:backgroundTint="@color/green_dark"
         android:contentDescription="@string/fab_content_desc"
         app:rippleColor="@color/green_light"
-        app:srcCompat="@drawable/ic_baseline_add_circle_24" />
+        app:srcCompat="@drawable/ic_add_btn" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

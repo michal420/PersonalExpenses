@@ -8,4 +8,6 @@
     <string name="amount_text">Amount €</string>
     <string name="amount_hint">Insert amount here...</string>
     <string name="select_color_text">Select colour</string>
+    <string name="total_text">"Total spending: "</string>
+    <string name="expenses_text">List of expenses:</string>
 </resources>
