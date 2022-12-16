@@ -3,6 +3,7 @@ package com.example.personalexpenses
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.icu.util.Currency
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,7 @@ class RecyclerAdapter(private val itemsList: List<Expense>) :
     RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
     private val currency = Currency.getInstance("EUR")
-    val df = DecimalFormat("#.##")
+    private val df = DecimalFormat("#.##")
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val itemDate: TextView
@@ -48,10 +49,16 @@ class RecyclerAdapter(private val itemsList: List<Expense>) :
             "Purple" to "#b30086"
         )
 
+        val color = itemsList[position].color.trim()
+        Log.d("tag", "color: ${color.length} / colors[color]: ${colors[color]}")
+
         holder.itemTitle.text = itemsList[position].title
         holder.itemAmount.text = currency.symbol + df.format(itemsList[position].amount)
         holder.itemDate.text = itemsList[position].dateTime
-        holder.cardView.setCardBackgroundColor(Color.parseColor(colors[ itemsList[position].color.trim()]))
+        holder.cardView.setCardBackgroundColor(Color.parseColor(colors[color]))
+//        holder.cardView.setCardBackgroundColor((Color.parseColor(colors[itemsList[position].color.trim()])))
+
+
     }
 
     override fun getItemCount(): Int {

@@ -20,25 +20,26 @@ class MainActivity : AppCompatActivity() {
     private val df = DecimalFormat("#.##")
 
     // sql lite
-    private val db = DBHelper(this, null)
+    private lateinit var db: DBHelper
     private lateinit var binding: ActivityMainBinding
     private val expensesList = mutableListOf<Expense>()
 
     @SuppressLint("Range")
     override fun onCreate(savedInstanceState: Bundle?) {
         // remove the default bar
-        supportActionBar?.hide()
+//        supportActionBar?.hide()
 
         super.onCreate(savedInstanceState)
 //        setContentView(R.layout.activity_main)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        db = DBHelper(this, null)
         // Read from DB
         val adapterList = readFromDB()
 
         // Recycler View
-        layoutManager = LinearLayoutManager(this)
+        layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL,true)
         val recyclerView: RecyclerView = findViewById(R.id.recycler_view)
         recyclerView.layoutManager = layoutManager
 
@@ -48,41 +49,48 @@ class MainActivity : AppCompatActivity() {
         // Calculate total spending
         calculateTotalSpending(adapterList)
 
+//        db.deleteAll()
+
         // FAB
         val fab: View = findViewById(R.id.floating_action_button)
         fab.setOnClickListener {
-            openActivity()
+            openAddExpenseActivity()
         } // end fab.setOnClickListener
 
     } // end onCreate
 
-    private fun openActivity() {
+    private fun openAddExpenseActivity() {
         val intent = Intent(this, AddExpenseActivity::class.java)
         startActivity(intent)
     }
 
     @SuppressLint("Range")
     private fun readFromDB(): List<Expense> {
+        // Create db object
         val cursor = db.getExpense()
-        cursor!!.moveToFirst()
 
-        val t = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_TITLE)) + "\n"
-        val a = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_AMOUNT)) + "\n"
-        val c = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_COLOR)) + "\n"
-        val d = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_DATE)) + "\n"
-
-        val e = Expense(t, a.toDouble(), c, d)
-        expensesList.add(e)
-
-        // move cursor to next value and append it
-        while (cursor.moveToNext()) {
+        if (cursor != null && cursor.count > 0) {
+            cursor!!.moveToFirst()
 
             val t = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_TITLE)) + "\n"
             val a = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_AMOUNT)) + "\n"
             val c = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_COLOR)) + "\n"
             val d = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_DATE)) + "\n"
+
             val e = Expense(t, a.toDouble(), c, d)
             expensesList.add(e)
+
+            // move cursor to next value and append it
+            while (cursor.moveToNext()) {
+
+                val t = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_TITLE)) + "\n"
+                val a = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_AMOUNT)) + "\n"
+                val c = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_COLOR)) + "\n"
+                val d = cursor.getString(cursor.getColumnIndex(DBHelper.COLUMN_DATE)) + "\n"
+                val e = Expense(t, a.toDouble(), c, d)
+                expensesList.add(e)
+
+            }
         }
         return expensesList
     } // end readFromDB

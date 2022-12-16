@@ -16,7 +16,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
                 "CREATE TABLE " + TABLE_NAME + " ("
                         + COLUMN_ID + " INTEGER PRIMARY KEY, " +
                         COLUMN_TITLE + " TEXT," +
-                        COLUMN_AMOUNT + " TEXT," +
+                        COLUMN_AMOUNT + " DOUBLE," +
                         COLUMN_COLOR + " TEXT," +
                         COLUMN_DATE + " TEXT" + ")"
                 )
@@ -30,7 +30,7 @@ class DBHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
     }
 
     // adding data in database
-    fun addExpense(title: String, amount: String, color: String, date: String) {
+    fun addExpense(title: String, amount: Double, color: String, date: String) {
         val values = ContentValues()
 
         // insert values
